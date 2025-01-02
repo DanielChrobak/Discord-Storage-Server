@@ -49,6 +49,7 @@ The following directories will be automatically generated in the project root:
 - Remote (WAN): `http://server_punblic_ip:8080`
 
 Note: On Windows, find your private IP using `ipconfig /all` in Command Prompt.
+
 Note: To access the Discord Storage Server through your public IP, you'll need to forward the port being used, in this case `8080`.
 
 ## File Management
