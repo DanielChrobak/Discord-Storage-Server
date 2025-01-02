@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Information</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #23272a;
+            padding: 20px;
+            font-size: 24px;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 30px 0;
+            font-size: 36px;
+            color: #ffffff;
+        }
+        .file-info-container {
+            background-color: #2c2f38;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .file-info {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .file-info strong {
+            color: #7289da;
+        }
+        .download-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #7289da;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: #5b6e94;
+        }
+        .progress-container {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #444;
+            height: 30px;
+            border-radius: 15px;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #7289da;
+            border-radius: 15px;
+        }
+        .progress-text {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #7289da;
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+        footer small {
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        Discord Storage Server
+    </header>
+
+    <div class="file-info-container">
+        <h1>File Information</h1>
+        <div class="file-info">
+            <p><strong>File UUID:</strong> {{ file_uuid }}</p>
+            <p><strong>Filename:</strong> {{ filename }}</p>
+            <p><strong>Upload Date:</strong> {{ upload_date }}</p>
+        </div>
+        <button class="download-btn" id="downloadButton">Download File</button>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="downloadProgress"></div>
+        </div>
+        <div id="progressText" class="progress-text" style="display: none;">0% Downloaded</div>
+    </div>
+
+    <script>
+        let downloadInProgress = false;
+        let progressInterval;
+
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            if (!downloadInProgress) {
+                downloadInProgress = true;
+                document.getElementById('downloadButton').disabled = true;
+                document.getElementById('downloadButton').textContent = 'Downloading...';
+                document.getElementById('progressContainer').style.display = 'block';
+                document.getElementById('progressText').style.display = 'block';
+
+                const session_uuid = generateSessionUUID();
+                window.location.href = '/download/' + '{{ file_uuid }}' + '?session_uuid=' + session_uuid;
+                startDownloadProgress(session_uuid);
+            } else {
+                resetProgressBar();
+            }
+        });
+
+        function generateSessionUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function startDownloadProgress(session_uuid) {
+            progressInterval = setInterval(function() {
+                fetch('/download_progress/' + session_uuid + '/' + '{{ file_uuid }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('downloadProgress').style.width = data.progress + '%';
+                        document.getElementById('progressText').textContent = data.progress + '% Downloaded';
+
+                        if (data.progress >= 100) {
+                            clearInterval(progressInterval);
+                            document.getElementById('downloadButton').disabled = false;
+                            document.getElementById('downloadButton').textContent = 'Download File';
+                            downloadInProgress = false;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching download progress:', error));
+            }, 1000);
+        }
+
+        function resetProgressBar() {
+            document.getElementById('downloadProgress').style.width = '0%';
+            document.getElementById('progressText').textContent = '0% Downloaded';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressText').style.display = 'none';
+            downloadInProgress = false;
+            document.getElementById('downloadButton').disabled = false;
+            document.getElementById('downloadButton').textContent = 'Download File';
+        }
+    </script>
+    <footer>
+        <small>&copy; <span id="year"></span> Daniel Chrobak. All rights reserved.</small>
+    </footer>
+    
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    
+    <!--
+    MIT License
+    
+    Copyright (c) 2025 Daniel Chrobak
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    -->
+
+</body>
+</html>

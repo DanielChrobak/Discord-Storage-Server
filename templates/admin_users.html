@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Users</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #23272a;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .container {
+            max-width: 800px;
+            margin: 15px auto;
+            padding: 15px;
+            background-color: #2c2f38;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 { font-size: 32px; }
+        h2 { 
+            font-size: 24px; 
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #3f4249;
+        }
+        .form-container {
+            background-color: #23272a;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #7289da;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #7289da;
+            background-color: #2c2f38;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #5865f2;
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.2);
+        }
+        .checkbox-group {
+            margin: 20px 0;
+        }
+        .checkbox-group label {
+            display: inline;
+            margin-left: 8px;
+            color: #e0e0e0;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #5865f2;
+        }
+        .users-list {
+            margin-top: 30px;
+        }
+        .user-item {
+            background-color: #23272a;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-role {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .role-admin {
+            background-color: #7289da;
+            color: white;
+        }
+        .role-user {
+            background-color: #36393f;
+            color: #dcddde;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #7289da;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .back-link:hover {
+            color: #5865f2;
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+        footer small {
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        Discord Storage Server - Admin Panel
+    </header>
+
+    <div class="container">
+        <h1>Manage Users</h1>
+        
+        <div class="form-container">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_admin" id="is_admin">
+                    <label for="is_admin">Admin privileges</label>
+                </div>
+                <button type="submit">Create User</button>
+            </form>
+        </div>
+
+        <h2>Existing Users</h2>
+        <div class="users-list">
+            {% for user in users %}
+                <div class="user-item">
+                    <span>{{ user[0] }}</span>
+                    <span class="user-role {% if user[2] %}role-admin{% else %}role-user{% endif %}">
+                        {% if user[2] %}Admin{% else %}User{% endif %}
+                    </span>
+                    
+                    {% if not user[2] %}  <!-- Only show delete option for non-admin users -->
+                    <form action="{{ url_for('delete_user', username=user[0]) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete('{{ user[0] }}');">
+                        <button type="submit" style="background-color: #ff4d4d; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                            Delete
+                        </button>
+                    </form>                    
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>        
+        
+        <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+    </div>    
+    <script>
+        function confirmDelete(username) {
+            return confirm("ARE YOU SURE YOU WANT TO DELETE USER " + username + "?");
+        }
+    </script>     
+    <footer>
+        <small>&copy; <span id="year"></span> Daniel Chrobak. All rights reserved.</small>
+    </footer>
+    
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    
+    <!--
+    MIT License
+    
+    Copyright (c) 2025 Daniel Chrobak
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    -->
+
+</body>
+</html>

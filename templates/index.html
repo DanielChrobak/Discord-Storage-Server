@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Storage - File Upload</title>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1f22;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #1e1f22;
+            padding: 20px;
+            font-size: 24px;
+            color: #ffffff;
+            border-bottom: 1px solid #2c2f38;
+        }
+        h1 {
+            margin: 30px 0;
+            font-size: 36px;
+            color: #ffffff;
+        }
+        .upload-container {
+            background-color: #2b2d31;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .dropzone {
+            margin: 20px 0;
+            background: #313338;
+            border: 1px solid #404249;
+            border-radius: 8px;
+            padding: 20px;
+            color: #b5bac1;
+            transition: border-color 0.3s ease;
+        }
+        .dropzone:hover {
+            border-color: #5865f2;
+        }
+        .upload-status {
+            margin-top: 15px;
+            padding: 10px;
+            background: #313338;
+            border-radius: 4px;
+            color: #b5bac1;
+        }
+        .upload-status a {
+            color: #5865f2;
+            text-decoration: none;
+        }
+        .upload-status a:hover {
+            text-decoration: underline;
+        }
+        .files-button, .logout-button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .files-button {
+            background-color: #5865f2;
+            color: white;
+        }
+        .files-button:hover {
+            background-color: #4752c4;
+        }
+        .logout-button {
+            background-color: #4f545c;
+            color: white;
+        }
+        .logout-button:hover {
+            background-color: #686d73;
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+        footer small {
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        Discord Storage Server
+    </header>
+
+    <div class="upload-container">
+        <h1>Upload Your File</h1>
+        <form action="/upload" class="dropzone" id="my-dropzone"></form>
+        <div id="upload-statuses"></div>
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('files') }}">
+                <button type="button" class="files-button">Go to File Explorer</button>
+            </a>
+
+            <form action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </div>    
+
+    <script>
+        // Keep the original JavaScript code unchanged
+        Dropzone.options.myDropzone = {
+            paramName: "file",
+            maxFilesize: null,
+            chunking: true,
+            forceChunking: true,
+            chunkSize: 25 * 1024 * 1024,
+            parallelChunkUploads: true,
+            retryChunks: true,
+            retryChunksLimit: 3,
+            createImageThumbnails: false,
+            init: function() {
+                this.on("sending", function(file, xhr, formData) {
+                    formData.append("dzuuid", file.upload.uuid);
+                });
+                this.on("complete", function(file) {
+                    if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                        console.log("All files uploaded");
+                    }
+                    checkUploadProgress(file.upload.uuid, file.name);
+                });
+            }
+        };
+
+        function checkUploadProgress(fileUuid, fileName) {
+            const statusesContainer = document.getElementById('upload-statuses');
+            const statusElement = document.createElement('div');
+            statusElement.className = 'upload-status';
+            statusElement.textContent = `${fileName}: Upload Progress: 0% (Processing file...)`;
+            statusesContainer.appendChild(statusElement);
+
+            let stopPolling = false;
+
+            function updateStatus() {
+                if (stopPolling) return;
+
+                fetch('/upload_progress/' + fileUuid)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.progress === 0) {
+                            statusElement.textContent = `${fileName}: Upload Progress: 0% (Processing file...)`;
+                        } else if (data.progress < 100) {
+                            statusElement.textContent = `${fileName}: Upload Progress: ${data.progress}%`;
+                        } else {
+                            statusElement.innerHTML = `${fileName}: <a href="/file/${fileUuid}" target="_blank">Click here to view your file</a>`;
+                            stopPolling = true;
+                        }
+
+                        if (!stopPolling) {
+                            setTimeout(updateStatus, 1000);
+                        }
+                    });
+            }
+            updateStatus();
+        }
+    </script>   
+    <footer>
+        <small>&copy; <span id="year"></span> Daniel Chrobak. All rights reserved.</small>
+    </footer>
+    
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    
+    <!--
+    MIT License
+    
+    Copyright (c) 2025 Daniel Chrobak
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    -->
+
+</body>
+</html>
