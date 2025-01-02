@@ -48,7 +48,9 @@ Run the following command to initialize the SQLite database:
 
 python
 >>> from app import init_db
+
 >>> init_db()
+
 >>> exit()
 
 ### Step 5: Start the Server
