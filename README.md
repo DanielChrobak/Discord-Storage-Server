@@ -27,9 +27,11 @@ This project implements a secure file storage system using Discord as a backend,
 
 1. Clone this repository to your local machine.
 2. Create a .env file in the project root with the following content:
+   ```
    DISCORD_BOT_TOKEN=your_bot_token_here
    DISCORD_GUILD_ID=your_guild_id_here
    FLASK_SECRET_KEY=a_random_secret_key
+   ```
 3. Replace your_bot_token_here with the bot token you copied earlier.
 4. Replace your_guild_id_here with the ID of your Discord server.
 5. Generate a random secret key for Flask and replace a_random_secret_key with it.
