@@ -41,18 +41,7 @@ Run the following command in your terminal:
 pip install -r requirements.txt
 ```
 
-### Step 4: Database Initialization
-
-Run the following command to initialize the SQLite database:
-
-   ```
-   python
-   >>> from app import init_db
-   >>> init_db()
-   >>> exit()
-   ```
-
-### Step 5: Start the Server
+### Step 4: Start the Server
 
 Run the following command to start the Flask server:
 
