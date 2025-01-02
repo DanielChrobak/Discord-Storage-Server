@@ -1,4 +1,6 @@
-# Discord Storage Bot
+# Discord Storage Server
+
+This README provides instructions on how to set up and use the Discord Storage Server application.
 
 ## Overview
 
@@ -14,8 +16,10 @@ The Discord Storage Bot is an innovative solution that transforms Discord server
 ## Prerequisites
 
 - Python 3.7+
-- Discord Bot Token
-- Discord Server (Guild) ID
+- Flask
+- discord.py
+- python-dotenv
+- SQLite3
 
 ## Installation
 
@@ -25,39 +29,40 @@ The Discord Storage Bot is an innovative solution that transforms Discord server
 
   ```pip install flask discord.py python-dotenv```
 
-  Replace the placeholders with your actual values.
+3. Create a .env file in the project root directory with the following contents:
 
+  ```
+  DISCORD_BOT_TOKEN=your_discord_bot_token
 
-3. Configure the environment:
+  DISCORD_GUILD_ID=your_discord_guild_id
 
-Create a `.env` file in the root directory with the following content:
+  FLASK_SECRET_KEY=your_flask_secret_key
+  ```
 
-```
-FLASK_SECRET_KEY=your_secret_key_here
-DISCORD_BOT_TOKEN=your_discord_bot_token_here
-DISCORD_GUILD_ID=your_discord_guild_id_here
-```
+  Replace the placeholders with your actual Discord bot token, guild ID, and a secure secret key for Flask.
 
 4. Directory structure:
 
-The following directories will be automatically generated in the project root:
-- `uploads`
-- `downloads`
+  The following directories will be automatically generated in the project root:
+  - `uploads`
+  - `downloads`
 
 ## Usage
 
 1. Start the bot:
 
-```python app.py```
+  ```python app.py```
 
 2. The Flask server will initialize, and you'll see confirmation messages in the console:
-- Flask server start message
-- Discord connection confirmation (appears twice in debug mode)
+  - Flask server start message
+  - Discord connection confirmation (appears twice in debug mode)
 
 3. Access the web interface:
-- Local: `http://localhost:8080`
-- Remote (LAN): `http://server_private_ip:8080`
-- Remote (WAN): `http://server_punblic_ip:8080`
+  - Local: `http://localhost:8080`
+  - Remote (LAN): `http://server_private_ip:8080`
+  - Remote (WAN): `http://server_punblic_ip:8080`
+
+  If this is the first time running the application, you'll be redirected to the setup page to create an admin account.
 
 Note: On Windows, find your private IP using `ipconfig /all` in Command Prompt.
 
