@@ -23,9 +23,9 @@ The Discord Storage Bot is an innovative solution that transforms Discord server
 
 2. Install the required dependencies:
 
-```pip install flask discord.py python-dotenv```
+  ```pip install flask discord.py python-dotenv```
 
-Replace the placeholders with your actual values.
+  Replace the placeholders with your actual values.
 
 4. Directory structure:
 
