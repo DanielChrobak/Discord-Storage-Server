@@ -327,7 +327,7 @@ async def download_chunks_from_discord(file_uuid, channel_id, session_uuid, down
 
 # Clean up files after download
 def delayed_cleanup(file_path, directory):
-    time.sleep(1)
+    time.sleep(600) # Clean up 10 minutes after download (Would be shorter but larger files take a while to actually download to the client)
     try:
         os.remove(file_path)
         for chunk_file in os.listdir(directory):
