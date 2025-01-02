@@ -29,6 +29,8 @@ This Discord Storage Bot allows you to use Discord servers as a file storage sys
 5. Create the following directories in the project root:
    - `uploads`
    - `downloads`
+  
+   Not that you don't actually have to create these, they'll be automatically generated later.
 
 ## Running the Bot
 
@@ -37,8 +39,10 @@ This Discord Storage Bot allows you to use Discord servers as a file storage sys
    python app.py
 
 2. The Flask server will start, and you should see a message indicating that the bot has connected to Discord.
+   You'll see the discord.gateway log that it has connected to Gateway (Session ID: ...) twice, this is because when you run the script in debug mode, the script restarts with stat "* Restarting with stat".
 
-3. Access the web interface by opening a browser and navigating to `http://localhost:8080`.
+3. Access the web interface by opening a browser and navigating to `http://localhost:8080` or `http://server_private_ip:8080`.
+   On windows you can find your private IP by opening command prompt and running `ipconfig /all` where you'll find your NIC and it will be next to `IPv4 Address`
 
 ## Usage
 
