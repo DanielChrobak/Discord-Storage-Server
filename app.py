@@ -87,22 +87,24 @@ def is_admin():
 
 # Discord upload and file management
 async def upload_to_discord(file_uuid):
-    """Uploads file chunks to Discord, creating a channel for the file."""
     guild = bot.get_guild(GUILD_ID)
-    channel = await guild.create_text_channel(file_uuid)  # Create a new text channel for the file
+    channel = await guild.create_text_channel(file_uuid)
 
-    # Store the channel ID in the database
+    # Update the database with the channel ID
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute('UPDATE file_metadata SET discord_channel_id = ? WHERE uuid = ?', (channel.id, file_uuid))
 
-    # Upload file chunks to the Discord channel
+    # Get and sort chunks
     chunks = sorted(os.listdir(os.path.join(UPLOAD_FOLDER, file_uuid)), 
                     key=lambda x: int(x.split('-C')[-1]))
     for i, chunk in enumerate(chunks, 1):
-        await channel.send(file=discord.File(os.path.join(UPLOAD_FOLDER, file_uuid, chunk)))
-        upload_progress[file_uuid] = int((i / len(chunks)) * 100)  # Track upload progress
+        chunk_path = os.path.join(UPLOAD_FOLDER, file_uuid, chunk)
+        await channel.send(file=discord.File(chunk_path))
+        upload_progress[file_uuid] = int((i / len(chunks)) * 100)
+        os.remove(chunk_path)  # Delete the chunk after uploading
 
-    os.rmdir(os.path.join(UPLOAD_FOLDER, file_uuid))  # Remove temporary upload directory
+    os.rmdir(os.path.join(UPLOAD_FOLDER, file_uuid))  # Remove the now-empty directory
+
 
 def combine_chunks(file_uuid, download_dir, combined_file_path):
     """Combines file chunks into a single file."""
