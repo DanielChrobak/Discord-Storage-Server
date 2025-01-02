@@ -55,14 +55,19 @@ The server should now be running on `http://localhost`.
 
 ## Initial Setup
 When you first access the Discord Storage Server, you'll be prompted to create an admin account if one doesn't exist. This can be done by navigating to one of the following addresses:
-- LOCAL: http://localhost/
-- LAN: http://private_IP/
-- WAN: http://public_IP/
+- LOCAL: `http://localhost/`
+- LAN: `http://private_IP/`
+- WAN: `http://public_IP/`
 
 ## User Administration
 Once the admin account is set up, you can manage users by following these steps:
 1. Log in with your admin credentials
 2. Access the user management panel at `http://localhost/admin/users`
+
+| Access Method | URL | Use Case |
+|---------------|-----|----------|
+| LOCAL | http://localhost/ | On the device running the server |
+
 
 
 ## File Operations
