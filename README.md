@@ -66,7 +66,9 @@ Once the admin account is set up, you can manage users by following these steps:
 
 | Access Method | URL | Use Case |
 |---------------|-----|----------|
-| LOCAL | http://localhost/ | On the device running the server |
+| LOCAL | `http://localhost/` | On the device running the server |
+| LAN | `http://private_IP/` | From any device on your local network |
+| WAN | `http://public_IP/` | From any device on any network |
 
 
 
