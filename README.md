@@ -47,7 +47,7 @@ Run the following command to start the Flask server:
 
 python app.py
 
-The server should now be running on `http://localhost`.
+The server should now be running on `http://127.0.0.1/`.
 
 ## Usage
 
@@ -55,18 +55,18 @@ The server should now be running on `http://localhost`.
 
 ## Initial Setup
 When you first access the Discord Storage Server, you'll be prompted to create an admin account if one doesn't exist. This can be done by navigating to one of the following addresses:
-- LOCAL: `http://localhost/`
+- LOCAL: `http://127.0.0.1/`
 - LAN: `http://private_IP/`
 - WAN: `http://public_IP/`
 
 ## User Administration
 Once the admin account is set up, you can manage users by following these steps:
 1. Log in with your admin credentials
-2. Access the user management panel at `http://localhost/admin/users`
+2. Access the user management panel at `http://127.0.0.1/admin/users`
 
 | Access Method | URL | Use Case |
 |---------------|-----|----------|
-| LOCAL | `http://localhost/` | On the device running the server |
+| LOCAL | `http://127.0.0.1/` | On the device running the server |
 | LAN | `http://private_IP/` | From any device on your local network |
 | WAN | `http://public_IP/` | From any device on any network |
 
@@ -75,13 +75,13 @@ Once the admin account is set up, you can manage users by following these steps:
 ## File Operations
 
 # Logging In
-1. Open your web browser and go to http://localhost:8080.
+1. Open your web browser and go to `http://localhost/`.
 2. You'll see a login page where you can enter your username and password.
 3. Enter your credentials and click the "Login" button.
 
 # Uploading Files
 1. After logging in, you'll be directed to the main page.
-2. Click on the "Upload Your File" button.
+2. Click on the "Upload Your File" button or Drag and Drop a file.
 3. Select the file you want to upload from your local machine.
 4. Click the "Upload" button to send the file to the server.
 
