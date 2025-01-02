@@ -1,0 +1,4 @@
+Flask==2.3.2
+discord.py==2.2.2
+python-dotenv==1.0.1
+Werkzeug==3.0.3
