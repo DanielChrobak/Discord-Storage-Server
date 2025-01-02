@@ -40,7 +40,7 @@ This project implements a secure file storage system using Discord as a backend,
 
 Run the following command in your terminal:
 
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
 ### Step 4: Database Initialization
 
