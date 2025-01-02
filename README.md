@@ -18,8 +18,7 @@ This project implements a secure file storage system using Discord as a backend,
 4. Under the "Token" section, click "Reset Token" to copy your bot token. Keep this secure!
 5. Enable the following "Privileged Gateway Intents":
    - Message Content Intent
-6. Go to the "OAuth2" tab, select "bot" under "Scopes", and choose necessary permissions.
-7. Copy the generated OAuth2 URL and use it to invite the bot to your Discord server.
+6. I use https://discordapi.com/permissions.html to generate an invite URL for my bot.
 
 ### Step 2: Environment Setup
 
