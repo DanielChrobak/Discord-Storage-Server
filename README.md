@@ -32,7 +32,8 @@ The Discord Storage Bot is an innovative solution that transforms Discord server
 
 Create a `.env` file in the root directory with the following content:
 
-```FLASK_SECRET_KEY=your_secret_key_here
+```
+  FLASK_SECRET_KEY=your_secret_key_here
   DISCORD_BOT_TOKEN=your_discord_bot_token_here
   DISCORD_GUILD_ID=your_discord_guild_id_here
 ```
