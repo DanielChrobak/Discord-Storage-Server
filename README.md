@@ -47,16 +47,25 @@ Run the following command to start the Flask server:
 
 python app.py
 
-The server should now be running on http://localhost:8080.
+The server should now be running on `http://localhost`.
 
 ## Usage
 
 ### User Management
 
-- Navigate to http://localhost:8080/setup to create the initial admin account.
-- Use the admin account to log in and manage users at http://localhost:8080/admin/users.
+## Initial Setup
+When you first access the Discord Storage Server, you'll be prompted to create an admin account if one doesn't exist. This can be done by navigating to one of the following addresses:
+- LOCAL: http://localhost/
+- LAN: http://private_IP/
+- WAN: http://public_IP/
 
-### File Operations
+## User Administration
+Once the admin account is set up, you can manage users by following these steps:
+1. Log in with your admin credentials
+2. Access the user management panel at `http://localhost/admin/users`
+
+
+## File Operations
 
 # Logging In
 1. Open your web browser and go to http://localhost:8080.
