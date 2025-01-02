@@ -1,6 +1,15 @@
 # Discord Storage Bot
 
-This Discord Storage Bot allows you to use Discord servers as a file storage system. It breaks down large files into chunks, uploads them to a designated Discord server, and reassembles them upon download.
+## Overview
+
+The Discord Storage Bot is an innovative solution that transforms Discord servers into a file storage system. It efficiently handles large files by breaking them into chunks, uploading them to a designated Discord server, and seamlessly reassembling them upon download.
+
+## Features
+
+- Large file support through chunking
+- Web interface for easy file management
+- Progress tracking for uploads and downloads
+- Utilizes Discord's robust infrastructure for storage
 
 ## Prerequisites
 
@@ -8,68 +17,69 @@ This Discord Storage Bot allows you to use Discord servers as a file storage sys
 - Discord Bot Token
 - Discord Server (Guild) ID
 
-## Setup
+## Installation
 
 1. Clone the repository or download the source code.
 
 2. Install the required dependencies:
 
-   pip install flask discord.py python-dotenv
+```pip install flask discord.py python-dotenv```
 
-3. Create a `.env` file in the root directory with the following content:
+Replace the placeholders with your actual values.
 
-   FLASK_SECRET_KEY=your_secret_key_here
-   
-   DISCORD_BOT_TOKEN=your_discord_bot_token_here
-   
-   DISCORD_GUILD_ID=your_discord_guild_id_here
+4. Directory structure:
 
-   Replace the placeholders with your actual values.
-
-5. Create the following directories in the project root:
-   - `uploads`
-   - `downloads`
-  
-   Not that you don't actually have to create these, they'll be automatically generated later.
-
-## Running the Bot
-
-1. Start the bot by running:
-
-   python app.py
-
-2. The Flask server will start, and you should see a message indicating that the bot has connected to Discord.
-   You'll see the discord.gateway log that it has connected to Gateway (Session ID: ...) twice, this is because when you run the script in debug mode, the script restarts with stat "* Restarting with stat".
-
-3. Access the web interface by opening a browser and navigating to `http://localhost:8080` or `http://server_private_ip:8080`.
-   On windows you can find your private IP by opening command prompt and running `ipconfig /all` where you'll find your NIC and it will be next to `IPv4 Address`
+The following directories will be automatically generated in the project root:
+- `uploads`
+- `downloads`
 
 ## Usage
 
-1. Upload files through the web interface. The bot will chunk the files and upload them to the specified Discord server.
+1. Start the bot:
 
-2. To download files, use the provided file UUID through the web interface.
+```python app.py```
 
-## Important Notes
+2. The Flask server will initialize, and you'll see confirmation messages in the console:
+- Flask server start message
+- Discord connection confirmation (appears twice in debug mode)
 
-- The bot creates a new text channel for each uploaded file in the specified Discord server.
-- Ensure your Discord bot has the necessary permissions to create channels and send messages in the server.
-- The maximum chunk size is set to 25MB by default. Adjust the `CHUNK_SIZE` variable in `app.py` if needed.
+3. Access the web interface:
+- Local: `http://localhost:8080`
+- Remote: `http://server_private_ip:8080`
+
+Note: On Windows, find your private IP using `ipconfig /all` in Command Prompt.
+
+## File Management
+
+1. **Uploading**: Use the web interface to upload files. The bot will chunk and distribute them across the Discord server.
+
+2. **Downloading**: Enter the file UUID in the web interface to retrieve and reassemble the file.
+
+## Technical Details
+
+- **Channel Creation**: The bot generates a new text channel for each uploaded file.
+- **Chunk Size**: Default is 25MB, adjustable in `app.py` (`CHUNK_SIZE` variable).
+- **Database**: File metadata is stored in a local SQLite database.
 
 ## Security Considerations
 
-- This bot stores file metadata in a local SQLite database. Ensure proper access controls for the server running this bot.
-- Files are stored in Discord channels. While Discord provides some level of security, consider the sensitivity of the data you're storing.
-- The web interface doesn't include authentication. Implement appropriate security measures if deploying in a non-local environment.
+- Implement access controls for the server hosting the bot.
+- Be mindful of data sensitivity when using Discord for storage.
+- The web interface lacks built-in authentication. Implement security measures for non-local deployments.
 
 ## Limitations
 
-- Discord has rate limits and storage limits. This bot may not be suitable for high-volume or large-scale file storage.
-- The bot doesn't handle file versioning or advanced file management features.
+- Subject to Discord's rate and storage limits.
+- Not suitable for high-volume or large-scale file storage.
+- Lacks advanced features like file versioning.
 
 ## Troubleshooting
 
-If you encounter any issues:
-- Check that your Discord bot token and Guild ID are correct.
-- Ensure the bot has the necessary permissions in the Discord server.
-- Review the console output for any error messages.
+If issues arise:
+1. Verify the Discord bot token and Guild ID.
+2. Ensure proper bot permissions in the Discord server.
+3. Check console output for error messages.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
