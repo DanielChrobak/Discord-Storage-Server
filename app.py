@@ -265,18 +265,20 @@ def download_file(file_uuid):
     if not session_uuid: return "Session UUID is required", 400
 
     with sqlite3.connect(DB_NAME) as conn:
-        result = conn.execute('SELECT filename, file_extension, discord_channel_id FROM file_metadata WHERE uuid = ?', (file_uuid,)).fetchone()
+        result = conn.execute('SELECT filename, discord_channel_id FROM file_metadata WHERE uuid = ?', (file_uuid,)).fetchone()
     if result is None: return "File not found", 404
 
     # Prepare the download directory for the session and file
     session_download_dir = os.path.join(DOWNLOAD_FOLDER, session_uuid, file_uuid)
     os.makedirs(session_download_dir, exist_ok=True)
 
+    print(result)
+
     # Download the chunks from Discord asynchronously
-    asyncio.run_coroutine_threadsafe(download_chunks_from_discord(file_uuid, result[2], session_uuid, session_download_dir), bot.loop).result()
+    asyncio.run_coroutine_threadsafe(download_chunks_from_discord(file_uuid, result[1], session_uuid, session_download_dir), bot.loop).result()
 
     # Combine the downloaded chunks into one file
-    combined_file_path = os.path.join(session_download_dir, f"{result[0]}{result[1]}")
+    combined_file_path = os.path.join(session_download_dir, f"{result[0]}")
     combine_chunks(file_uuid, session_download_dir, combined_file_path)
 
     @after_this_request
@@ -285,7 +287,7 @@ def download_file(file_uuid):
         return response
 
     # Send the combined file to the user
-    return send_file(combined_file_path, as_attachment=True, download_name=f"{result[0]}{result[1]}")
+    return send_file(combined_file_path, as_attachment=True, download_name=f"{result[0]}")
 
 # Track download progress for specific files and sessions
 @app.route('/download_progress/<session_uuid>/<file_uuid>')
@@ -342,4 +344,4 @@ def delayed_cleanup(file_path, directory):
 if __name__ == '__main__':
     init_db()  # Initialize the database
     threading.Thread(target=bot.run, args=(DISCORD_TOKEN,), daemon=True).start()  # Start Discord bot
-    app.run(debug=True, port=8080, host="0.0.0.0")  # Start Flask app
+    app.run(debug=True, port=80, host="0.0.0.0")  # Start Flask app
