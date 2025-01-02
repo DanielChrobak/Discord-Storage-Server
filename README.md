@@ -47,9 +47,10 @@ pip install -r requirements.txt
 Run the following command to initialize the SQLite database:
 
    ```
-   from app import init_db
-   init_db()
-   exit()
+   python
+   >>> from app import init_db
+   >>> init_db()
+   >>> exit()
    ```
 
 ### Step 5: Start the Server
