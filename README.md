@@ -14,8 +14,8 @@ This project implements a secure file storage system using Discord as a backend,
 
 1. Go to the Discord Developer Portal (https://discord.com/developers/applications).
 2. Click "New Application" and give it a name.
-3. Navigate to the "Bot" tab and click "Add Bot".
-4. Under the "Token" section, click "Copy" to copy your bot token. Keep this secure!
+3. Navigate to the "Bot" tab.
+4. Under the "Token" section, click "Reset Token" to copy your bot token. Keep this secure!
 5. Enable the following "Privileged Gateway Intents":
    - Presence Intent
    - Server Members Intent
