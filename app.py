@@ -272,8 +272,6 @@ def download_file(file_uuid):
     session_download_dir = os.path.join(DOWNLOAD_FOLDER, session_uuid, file_uuid)
     os.makedirs(session_download_dir, exist_ok=True)
 
-    print(result)
-
     # Download the chunks from Discord asynchronously
     asyncio.run_coroutine_threadsafe(download_chunks_from_discord(file_uuid, result[1], session_uuid, session_download_dir), bot.loop).result()
 
