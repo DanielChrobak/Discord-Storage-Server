@@ -71,26 +71,26 @@ The server should now be running on http://localhost:8080.
 ### File Operations
 
 # Logging In
-- Open your web browser and go to http://localhost:8080.
-- You'll see a login page where you can enter your username and password.
-- Enter your credentials and click the "Login" button.
+1. Open your web browser and go to http://localhost:8080.
+2. You'll see a login page where you can enter your username and password.
+3. Enter your credentials and click the "Login" button.
 
 # Uploading Files
-- After logging in, you'll be directed to the main page.
-- Click on the "Upload Your File" button.
-- Select the file you want to upload from your local machine.
-- Click the "Upload" button to send the file to the server.
+1. After logging in, you'll be directed to the main page.
+2. Click on the "Upload Your File" button.
+3. Select the file you want to upload from your local machine.
+4. Click the "Upload" button to send the file to the server.
 
 # Viewing and Managing Files
-- From the main page, click on "Go to File Explorer".
-- You'll see a list of all uploaded files, including their filenames and upload dates.
-- To view or download a specific file, click the "View" button next to the file name.
+1. From the main page, click on "Go to File Explorer".
+2. You'll see a list of all uploaded files, including their filenames and upload dates.
+3. To view or download a specific file, click the "View" button next to the file name.
 
 # Downloading Files
-- In the File Explorer, click the "View" button next to the file you want to download.
-- You'll be taken to a File Information page showing details about the file.
-- Click the "Download File" button to start downloading the file to your local machine.
-- You can monitor the download progress using the progress bar at the bottom of the page.
+1. In the File Explorer, click the "View" button next to the file you want to download.
+2. You'll be taken to a File Information page showing details about the file.
+3. Click the "Download File" button to start downloading the file to your local machine.
+4. You can monitor the download progress using the progress bar at the bottom of the page.
 
 # Logging Out
 - To log out of the system, click the "Logout" button on the main page.
