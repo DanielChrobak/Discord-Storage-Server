@@ -84,13 +84,12 @@ Note: To access the Discord Storage Server through your public IP, you'll need t
 
 - Implement access controls for the server hosting the bot.
 - Be mindful of data sensitivity when using Discord for storage.
-- The web interface lacks built-in authentication. Implement security measures for non-local deployments.
+- The web interface has a basic built-in authentication system. Implement security measures for non-local deployments.
 
 ## Limitations
 
 - Subject to Discord's rate and storage limits.
-- Not suitable for high-volume or large-scale file storage.
-- Lacks advanced features like file versioning.
+- May not be suitable for high-volume or large-scale file storage.
 
 ## Troubleshooting
 
