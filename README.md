@@ -12,7 +12,7 @@ This project implements a secure file storage system using Discord as a backend,
 
 ### Step 1: Discord Bot Setup
 
-1. Go to the Discord Developer Portal (https://discord.com/developers/applications).
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
 2. Click "New Application" and give it a name.
 3. Navigate to the "Bot" tab.
 4. Under the "Token" section, click "Reset Token" to copy your bot token. Keep this secure!
