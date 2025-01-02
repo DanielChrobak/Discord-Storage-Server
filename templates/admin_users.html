@@ -176,11 +176,11 @@
             {% for user in users %}
                 <div class="user-item">
                     <span>{{ user[0] }}</span>
-                    <span class="user-role {% if user[2] %}role-admin{% else %}role-user{% endif %}">
-                        {% if user[2] %}Admin{% else %}User{% endif %}
+                    <span class="user-role {% if user[1] %}role-admin{% else %}role-user{% endif %}">
+                        {% if user[1] %}Admin{% else %}User{% endif %}
                     </span>
                     
-                    {% if not user[2] %}  <!-- Only show delete option for non-admin users -->
+                    {% if not user[1] %}  <!-- Only show delete option for non-admin users -->
                     <form action="{{ url_for('delete_user', username=user[0]) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete('{{ user[0] }}');">
                         <button type="submit" style="background-color: #ff4d4d; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
                             Delete
