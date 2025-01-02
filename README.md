@@ -1,103 +1,90 @@
-# Discord Storage Server
+# Discord File Storage Server
 
-This README provides instructions on how to set up and use the Discord Storage Server application.
+This project implements a secure file storage system using Discord as a backend, with a Flask web interface for user management and file operations.
 
-## Overview
+## Setup Instructions
 
-The Discord Storage Bot is an innovative solution that transforms Discord servers into a file storage system. It efficiently handles large files by breaking them into chunks, uploading them to a designated Discord server, and seamlessly reassembling them upon download.
-
-## Features
-
-- Large file support through chunking
-- Web interface for easy file management
-- Progress tracking for uploads and downloads
-- Utilizes Discord's robust infrastructure for storage
-
-## Prerequisites
+### Prerequisites
 
 - Python 3.7+
-- Flask
-- discord.py
-- python-dotenv
-- SQLite3
+- pip (Python package manager)
+- A Discord account and a Discord server where you have administrative privileges
 
-## Installation
+### Step 1: Discord Bot Setup
 
-1. Clone the repository or download the source code.
+1. Go to the Discord Developer Portal (https://discord.com/developers/applications).
+2. Click "New Application" and give it a name.
+3. Navigate to the "Bot" tab and click "Add Bot".
+4. Under the "Token" section, click "Copy" to copy your bot token. Keep this secure!
+5. Enable the following "Privileged Gateway Intents":
+   - Presence Intent
+   - Server Members Intent
+   - Message Content Intent
+6. Go to the "OAuth2" tab, select "bot" under "Scopes", and choose necessary permissions.
+7. Copy the generated OAuth2 URL and use it to invite the bot to your Discord server.
 
-2. Install the required dependencies:
+### Step 2: Environment Setup
 
-  ```pip install flask discord.py python-dotenv```
+1. Clone this repository to your local machine.
+2. Create a .env file in the project root with the following content:
+   DISCORD_BOT_TOKEN=your_bot_token_here
+   DISCORD_GUILD_ID=your_guild_id_here
+   FLASK_SECRET_KEY=a_random_secret_key
+3. Replace your_bot_token_here with the bot token you copied earlier.
+4. Replace your_guild_id_here with the ID of your Discord server.
+5. Generate a random secret key for Flask and replace a_random_secret_key with it.
 
-3. Create a .env file in the project root directory with the following contents:
+### Step 3: Install Dependencies
 
-  ```
-  DISCORD_BOT_TOKEN=your_discord_bot_token
+Run the following command in your terminal:
 
-  DISCORD_GUILD_ID=your_discord_guild_id
+pip install -r requirements.txt
 
-  FLASK_SECRET_KEY=your_flask_secret_key
-  ```
+### Step 4: Database Initialization
 
-  Replace the placeholders with your actual Discord bot token, guild ID, and a secure secret key for Flask.
+Run the following command to initialize the SQLite database:
 
-4. Directory structure:
+python
+>>> from app import init_db
+>>> init_db()
+>>> exit()
 
-  The following directories will be automatically generated in the project root:
-  - `uploads`
-  - `downloads`
+### Step 5: Start the Server
+
+Run the following command to start the Flask server:
+
+python app.py
+
+The server should now be running on http://localhost:8080.
 
 ## Usage
 
-1. Start the bot:
+### User Management
 
-  ```python app.py```
+- Navigate to http://localhost:8080/setup to create the initial admin account.
+- Use the admin account to log in and manage users at http://localhost:8080/admin/users.
 
-2. The Flask server will initialize, and you'll see confirmation messages in the console:
-  - Flask server start message
-  - Discord connection confirmation (appears twice in debug mode)
+### File Operations
 
-3. Access the web interface:
-  - Local: `http://localhost:8080`
-  - Remote (LAN): `http://server_private_ip:8080`
-  - Remote (WAN): `http://server_punblic_ip:8080`
-
-  If this is the first time running the application, you'll be redirected to the setup page to create an admin account.
-
-Note: On Windows, find your private IP using `ipconfig /all` in Command Prompt.
-
-Note: To access the Discord Storage Server through your public IP, you'll need to forward the port being used, in this case `8080`.
-
-## File Management
-
-1. **Uploading**: Use the web interface to upload files. The bot will chunk and distribute them across the Discord server.
-
-2. **Downloading**: Enter the file UUID in the web interface to retrieve and reassemble the file.
-
-## Technical Details
-
-- **Channel Creation**: The bot generates a new text channel for each uploaded file.
-- **Chunk Size**: Default is 25MB, adjustable in `app.py` (`CHUNK_SIZE` variable).
-- **Database**: File metadata is stored in a local SQLite database.
+- Log in to access the file management interface.
+- Use the upload form to send files to the server.
+- View and download files from the file explorer.
 
 ## Security Considerations
 
-- Implement access controls for the server hosting the bot.
-- Be mindful of data sensitivity when using Discord for storage.
-- The web interface has a basic built-in authentication system. Implement security measures for non-local deployments.
-
-## Limitations
-
-- Subject to Discord's rate and storage limits.
-- May not be suitable for high-volume or large-scale file storage.
+- Keep your .env file secure and never commit it to version control.
+- Regularly rotate your Discord bot token and Flask secret key.
+- Implement additional security measures like rate limiting and input validation in a production environment.
 
 ## Troubleshooting
 
-If issues arise:
-1. Verify the Discord bot token and Guild ID.
-2. Ensure proper bot permissions in the Discord server.
-3. Check console output for error messages.
+- If you encounter any issues with Discord integration, ensure your bot has the necessary permissions in your Discord server.
+- Check the console output for any error messages when running the server.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+## License
+
+This project is licensed under the MIT License.
