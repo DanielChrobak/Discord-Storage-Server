@@ -19,12 +19,14 @@ This Discord Storage Bot allows you to use Discord servers as a file storage sys
 3. Create a `.env` file in the root directory with the following content:
 
    FLASK_SECRET_KEY=your_secret_key_here
+   
    DISCORD_BOT_TOKEN=your_discord_bot_token_here
+   
    DISCORD_GUILD_ID=your_discord_guild_id_here
 
    Replace the placeholders with your actual values.
 
-4. Create the following directories in the project root:
+5. Create the following directories in the project root:
    - `uploads`
    - `downloads`
 
