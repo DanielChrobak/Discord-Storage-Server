@@ -75,15 +75,13 @@ Once the admin account is set up, you can manage users by following these steps:
 ## File Operations
 
 # Logging In
-1. Open your web browser and go to `http://localhost/`.
+1. Open your web browser and go to `http://127.0.0.1/`.
 2. You'll see a login page where you can enter your username and password.
 3. Enter your credentials and click the "Login" button.
 
 # Uploading Files
 1. After logging in, you'll be directed to the main page.
-2. Click on the "Upload Your File" button or Drag and Drop a file.
-3. Select the file you want to upload from your local machine.
-4. Click the "Upload" button to send the file to the server.
+2. Click on the "Upload Your File" button and select the file you want to upload or Drag and Drop a file.
 
 # Viewing and Managing Files
 1. From the main page, click on "Go to File Explorer".
