@@ -2,7 +2,6 @@
 
 This project implements a secure file storage system using Discord as a backend, with a Flask web interface for user management and file operations. 
 Files are encrypted on the server side before being uploaded to Discord, ensuring enhanced data security.
-These additions highlight the server-side encryption feature, providing users with information about the enhanced security measures in place for their uploaded files.
 
 ## Setup Instructions
 
