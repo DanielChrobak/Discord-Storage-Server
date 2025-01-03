@@ -82,6 +82,7 @@ Once the admin account is set up, you can manage users by following these steps:
 # Uploading Files
 1. After logging in, you'll be directed to the main page.
 2. Click on the "Upload Your File" button and select the file you want to upload or Drag and Drop a file.
+3. The file will be automatically split into chunks, encrypted server side, and then uploaded to the Discord server for secure storage.
 
 # Viewing and Managing Files
 1. From the main page, click on "Go to File Explorer".
