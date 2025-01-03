@@ -4,10 +4,16 @@ import re
 import time
 import asyncio
 import threading
-from flask import (Flask, render_template, request, jsonify, send_file, 
-                   redirect, url_for, session, after_this_request)
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, session, after_this_request
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import keywrap
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -42,6 +48,7 @@ def init_db():
                 uuid TEXT PRIMARY KEY, 
                 filename TEXT NOT NULL, 
                 discord_channel_id TEXT, 
+                encryption_key BLOB NOT NULL,
                 upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS users (
@@ -50,6 +57,31 @@ def init_db():
                 is_admin BOOLEAN NOT NULL DEFAULT 0
             );
         ''')
+
+# Encryption utility functions
+def generate_key():
+    """Generate a random 256-bit key."""
+    return os.urandom(32)
+
+def encrypt_data(key, plaintext):
+    """Encrypts data using AES-CBC."""
+    iv = os.urandom(16)
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(plaintext) + padder.finalize()
+    ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+    return iv + ciphertext
+
+def decrypt_data(key, ciphertext):
+    """Decrypts data using AES-CBC."""
+    iv, actual_ciphertext = ciphertext[:16], ciphertext[16:]
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+    padded_data = decryptor.update(actual_ciphertext) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    plaintext = unpadder.update(padded_data) + unpadder.finalize()
+    return plaintext
 
 # User management functions
 def create_user(username, password, is_admin=False):
@@ -99,12 +131,13 @@ async def upload_to_discord(file_uuid):
                     key=lambda x: int(x.split('-C')[-1]))
     for i, chunk in enumerate(chunks, 1):
         chunk_path = os.path.join(UPLOAD_FOLDER, file_uuid, chunk)
+        chunk_size = os.path.getsize(chunk_path)
+        print(f"Uploading chunk {i}/{len(chunks)}: {chunk} (Size: {chunk_size} bytes)")  # Debugging output
         await channel.send(file=discord.File(chunk_path))
         upload_progress[file_uuid] = int((i / len(chunks)) * 100)
         os.remove(chunk_path)  # Delete the chunk after uploading
 
     os.rmdir(os.path.join(UPLOAD_FOLDER, file_uuid))  # Remove the now-empty directory
-
 
 def combine_chunks(file_uuid, download_dir, combined_file_path):
     """Combines file chunks into a single file."""
@@ -181,9 +214,8 @@ def delete_user(username):
     return jsonify({'error': 'User not found or cannot delete an admin.'}), 400
 
 @app.route('/upload', methods=['POST'])
-@login_required
 def upload_chunk():
-    """Handles uploading file chunks to the server."""
+    """Handles uploading file chunks to the server with encryption."""
     file = request.files['file']
     chunk_index = int(request.form['dzchunkindex'])
     total_chunks = int(request.form['dztotalchunkcount'])
@@ -192,16 +224,43 @@ def upload_chunk():
     file_dir = os.path.join(UPLOAD_FOLDER, file_uuid)
     os.makedirs(file_dir, exist_ok=True)
     chunk_path = os.path.join(file_dir, f"{file_uuid}-C{chunk_index + 1}")
-    file.save(chunk_path)
 
-    if chunk_index == 0:
-        with sqlite3.connect(DB_NAME) as conn:
-            conn.execute('INSERT INTO file_metadata (uuid, filename) VALUES (?, ?)', (file_uuid, file.filename))
+    try:
+        if chunk_index == 0:
+            # Generate and store encryption key for the first chunk
+            encryption_key = generate_key()
+            with sqlite3.connect(DB_NAME) as conn:
+                conn.execute(
+                    'INSERT INTO file_metadata (uuid, filename, encryption_key) VALUES (?, ?, ?)',
+                    (file_uuid, file.filename, encryption_key)
+                )
+                print(f"Inserted encryption key for file {file.filename} with UUID {file_uuid}.")
+        else:
+            # Retrieve the encryption key for subsequent chunks
+            with sqlite3.connect(DB_NAME) as conn:
+                encryption_key_row = conn.execute(
+                    'SELECT encryption_key FROM file_metadata WHERE uuid = ?', (file_uuid,)
+                ).fetchone()
+                if not encryption_key_row:
+                    raise ValueError(f"Encryption key not found for file UUID {file_uuid}.")
+                encryption_key = encryption_key_row[0]
+                print(f"Retrieved encryption key for file UUID {file_uuid}.")
 
-    if chunk_index == total_chunks - 1:
-        asyncio.run_coroutine_threadsafe(upload_to_discord(file_uuid), bot.loop)
+        # Encrypt and save chunk
+        encrypted_data = encrypt_data(encryption_key, file.read())
+        with open(chunk_path, 'wb') as f:
+            f.write(encrypted_data)
 
-    return jsonify({'success': True, 'file_uuid': file_uuid})
+        print(f"Saved chunk {chunk_index + 1}/{total_chunks} for file UUID {file_uuid}.")
+
+        # Trigger upload to Discord after the last chunk
+        if chunk_index == total_chunks - 1:
+            asyncio.run_coroutine_threadsafe(upload_to_discord(file_uuid), bot.loop)
+
+        return jsonify({'success': True, 'file_uuid': file_uuid})
+    except Exception as e:
+        print(f"Error uploading chunk {chunk_index + 1}/{total_chunks} for file UUID {file_uuid}: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/upload_progress/<file_uuid>')
 @login_required
@@ -236,32 +295,57 @@ def file_info(file_uuid):
     return render_template('file_info.html', file_uuid=file_uuid, filename=file[0], upload_date=file[1])
 
 @app.route('/download/<file_uuid>')
-@login_required
 def download_file(file_uuid):
-    """Handles downloading a file from Discord."""
+    """Handles downloading a file from Discord with decryption."""
     session_uuid = request.args.get('session_uuid')
     if not session_uuid:
         return "Session UUID is required", 400
 
     with sqlite3.connect(DB_NAME) as conn:
-        file = conn.execute('SELECT filename, discord_channel_id FROM file_metadata WHERE uuid = ?', (file_uuid,)).fetchone()
-    if not file:
+        file_metadata = conn.execute(
+            'SELECT filename, discord_channel_id, encryption_key FROM file_metadata WHERE uuid = ?', (file_uuid,)
+        ).fetchone()
+
+    if not file_metadata:
         return "File not found", 404
 
+    filename, channel_id, encryption_key = file_metadata
     session_download_dir = os.path.join(DOWNLOAD_FOLDER, session_uuid, file_uuid)
     os.makedirs(session_download_dir, exist_ok=True)
 
-    asyncio.run_coroutine_threadsafe(download_chunks_from_discord(file_uuid, file[1], session_uuid, session_download_dir), bot.loop).result()
+    asyncio.run_coroutine_threadsafe(
+        download_chunks_from_discord(file_uuid, channel_id, session_uuid, session_download_dir), bot.loop
+    ).result()
 
-    combined_file_path = os.path.join(session_download_dir, file[0])
-    combine_chunks(file_uuid, session_download_dir, combined_file_path)
+    combined_file_path = os.path.join(session_download_dir, filename)
+
+    # Filter and validate chunks
+    chunk_files = [
+        f for f in os.listdir(session_download_dir)
+        if re.match(rf'{file_uuid}-C\d+', f)
+    ]
+    if not chunk_files:
+        return "No valid chunks found for the file.", 500
+
+    chunk_files = sorted(
+        chunk_files, key=lambda x: int(re.search(r'-C(\d+)', x).group(1))
+    )
+
+    with open(combined_file_path, 'wb') as outfile:
+        for chunk in chunk_files:
+            chunk_path = os.path.join(session_download_dir, chunk)
+            with open(chunk_path, 'rb') as infile:
+                encrypted_chunk = infile.read()
+                decrypted_chunk = decrypt_data(encryption_key, encrypted_chunk)
+                outfile.write(decrypted_chunk)
+            os.remove(chunk_path)
 
     @after_this_request
     def cleanup(response):
         threading.Thread(target=delayed_cleanup, args=(combined_file_path, session_download_dir), daemon=True).start()
         return response
 
-    return send_file(combined_file_path, as_attachment=True, download_name=file[0])
+    return send_file(combined_file_path, as_attachment=True, download_name=filename)
 
 @app.route('/download_progress/<session_uuid>/<file_uuid>')
 @login_required
@@ -288,7 +372,7 @@ async def download_chunks_from_discord(file_uuid, channel_id, session_uuid, down
 
 def delayed_cleanup(file_path, directory):
     """Cleans up temporary files and directories after use."""
-    time.sleep(600)  # Delay cleanup to allow file download completion
+    time.sleep(3600)  # Delay cleanup to allow file download completion
     try:
         os.remove(file_path)
         for chunk_file in os.listdir(directory):
