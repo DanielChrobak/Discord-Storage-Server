@@ -102,6 +102,7 @@ Once the admin account is set up, you can manage users by following these steps:
 - Keep your .env file secure and never commit it to version control.
 - Regularly rotate your Discord bot token and Flask secret key.
 - Implement additional security measures like rate limiting and input validation in a production environment.
+- All file chunks are encrypted server side before being uploaded to the Discord server, ensuring an additional layer of security for your data.
 
 ## Troubleshooting
 
